@@ -1,0 +1,10 @@
+import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios'
+import { useAuthStore } from '../store/authStore'
+const baseURL=import.meta.env.VITE_API_URL||'/api/v1'
+export const api=axios.create({baseURL,headers:{'Content-Type':'application/json'}})
+let refreshing:Promise<string>|null=null
+api.interceptors.request.use((config:InternalAxiosRequestConfig)=>{const token=useAuthStore.getState().access;if(token)config.headers.Authorization=`Bearer ${token}`;return config})
+api.interceptors.response.use(r=>r,async(error:AxiosError)=>{const original=error.config as (InternalAxiosRequestConfig&{_retry?:boolean})|undefined
+ if(error.response?.status===401&&original&&!original._retry&&useAuthStore.getState().refresh){original._retry=true
+  try{refreshing??=axios.post(`${baseURL}/auth/token/refresh/`,{refresh:useAuthStore.getState().refresh}).then(r=>r.data.access as string).finally(()=>{refreshing=null});const access=await refreshing;useAuthStore.getState().setTokens(access,useAuthStore.getState().refresh!);original.headers.Authorization=`Bearer ${access}`;return api(original)}catch{useAuthStore.getState().logout()}}
+ return Promise.reject(error)})
