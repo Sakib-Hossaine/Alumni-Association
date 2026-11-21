@@ -38,7 +38,12 @@ const imageUrl = (url?: string | null) =>
   url
     ? url.startsWith("http")
       ? url
-      : `${new URL(api.defaults.baseURL!).origin}${url}`
+      : new URL(
+          url,
+          api.defaults.baseURL?.startsWith("http")
+            ? api.defaults.baseURL
+            : window.location.origin,
+        ).toString()
     : "";
 const initials = (name: string) =>
   name

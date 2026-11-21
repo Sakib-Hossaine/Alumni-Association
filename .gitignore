@@ -37,3 +37,5 @@ frontend/dist/
 backend/media/
 .env
 .env.*
+.vercel
+.env*
