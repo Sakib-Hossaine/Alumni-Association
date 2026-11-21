@@ -1,2 +1,20 @@
+[project]
+name = "alumni-management-backend"
+version = "1.0.0"
+requires-python = ">=3.10,<3.14"
+dependencies = [
+    "Django>=5.0,<6.0",
+    "djangorestframework>=3.15",
+    "djangorestframework-simplejwt>=5.3",
+    "django-filter>=24.2",
+    "django-cors-headers>=4.4",
+    "psycopg[binary]>=3.2",
+    "Pillow>=10.4",
+    "python-decouple>=3.8",
+    "django-storages[s3]>=1.14",
+]
+
+[tool.uv]
+package = false
 [tool.vercel.scripts]
 build = "python build.py"
