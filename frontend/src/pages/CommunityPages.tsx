@@ -74,7 +74,7 @@ export function AccountProfilePage() {
     onSuccess: (u) => {
       setUser(u);
       setPhoto(null);
-      // Keep the selected blob preview visible after a successful upload.
+      setPreview(u.profile_photo || preview);
       toast.success("Profile picture updated");
       qc.invalidateQueries({ queryKey: ["account", "me"] });
     },

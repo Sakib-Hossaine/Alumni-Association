@@ -25,7 +25,9 @@ def serve_database_media(request, name):
         raise Http404
     import mimetypes
     content_type = mimetypes.guess_type(asset.name)[0] or "application/octet-stream"
-    return HttpResponse(bytes(asset.content), content_type=content_type)
+    response = HttpResponse(bytes(asset.content), content_type=content_type)
+    response["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    return response
 
 router = DefaultRouter()
 router.register("users", UserViewSet, basename="user")

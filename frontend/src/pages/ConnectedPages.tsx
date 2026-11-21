@@ -239,12 +239,18 @@ export function AlumniPage() {
       if (!editing || !photo) throw new Error("Choose a photo first.");
       const data = new FormData();
       data.append("profile_photo", photo);
-      return api.patch(`/alumni/${editing.id}/photo/`, data);
+      return (
+        await api.patch<AlumniProfile>(
+          `/alumni/${editing.id}/photo/`,
+          data,
+        )
+      ).data;
     },
-    onSuccess: () => {
+    onSuccess: (updated) => {
       toast.success("Alumni photo updated");
+      setEditing(updated);
       setPhoto(null);
-      // Keep the selected blob preview visible after a successful upload.
+      setPhotoPreview(updated.profile_photo || photoPreview);
       qc.invalidateQueries({ queryKey: ["alumni"] });
       qc.invalidateQueries({ queryKey: ["alumni", "directory"] });
     },
@@ -1096,7 +1102,7 @@ export function ProfilePage() {
     onSuccess: (u) => {
       setUser(u);
       setPhoto(null);
-      // Keep the selected blob preview visible after a successful upload.
+      setPhotoPreview(u.profile_photo || photoPreview);
       toast.success("Profile picture updated");
       qc.invalidateQueries({ queryKey: ["alumni", "me"] });
       qc.invalidateQueries({ queryKey: ["account", "me"] });
