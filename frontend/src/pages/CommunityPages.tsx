@@ -7,6 +7,7 @@ import { api } from "../api/client";
 import { useAuthStore } from "../store/authStore";
 import { PageHeader } from "../components/shared/PageHeader";
 import { ProfileAvatar } from "../components/shared/ProfileAvatar";
+import { mediaUrl } from "../lib/utils";
 import type { Batch, Page, User } from "../types";
 
 type DirectoryItem = {
@@ -34,17 +35,7 @@ const err = (e: any) =>
     .flat()
     .find((x) => typeof x === "string") ||
   "Please try again.";
-const imageUrl = (url?: string | null) =>
-  url
-    ? url.startsWith("http")
-      ? url
-      : new URL(
-          url,
-          api.defaults.baseURL?.startsWith("http")
-            ? api.defaults.baseURL
-            : window.location.origin,
-        ).toString()
-    : "";
+const imageUrl = mediaUrl;
 const initials = (name: string) =>
   name
     .split(/\s+/)
@@ -66,15 +57,18 @@ export function AccountProfilePage() {
   useEffect(() => {
     if (profile.data) setUser(profile.data);
   }, [profile.data, setUser]);
+  useEffect(() => {
+    return () => {
+      if (preview.startsWith("blob:")) URL.revokeObjectURL(preview);
+    };
+  }, [preview]);
   const save = useMutation({
     mutationFn: async () => {
       if (!photo) throw new Error("Choose an image first.");
       const data = new FormData();
       data.append("profile_photo", photo);
       return (
-        await api.patch<User>("/users/me/", data, {
-          headers: { "Content-Type": "multipart/form-data" },
-        })
+        await api.patch<User>("/users/me/", data)
       ).data;
     },
     onSuccess: (u) => {
@@ -97,15 +91,11 @@ export function AccountProfilePage() {
       <section className="card max-w-3xl p-6 md:p-9">
         <div className="flex flex-col items-center gap-6 sm:flex-row">
           <div className="grid h-36 w-36 shrink-0 place-items-center overflow-hidden rounded-full border-4 border-white/10 bg-gradient-to-br from-cyan-300 via-violet-400 to-pink-400 text-4xl font-black text-[#111326] shadow-xl">
-            {preview || current ? (
-              <img
-                className="h-full w-full object-cover"
-                src={preview || imageUrl(current)}
-                alt="Profile preview"
-              />
-            ) : (
-              initials(user?.name || "Alumni")
-            )}
+            <ProfileAvatar
+              src={preview || current}
+              name={user?.name || "Alumni"}
+              className="h-full w-full rounded-none"
+            />
           </div>
           <div className="text-center sm:text-left">
             <h2 className="text-xl font-bold text-white">{user?.name}</h2>
@@ -179,9 +169,7 @@ export function GalleryPage() {
       const d = new FormData();
       d.append("image", file);
       d.append("caption", caption);
-      return api.post("/gallery/", d, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      return api.post("/gallery/", d);
     },
     onSuccess: () => {
       toast.success("Image added to the community gallery");
@@ -279,6 +267,9 @@ export function GalleryPage() {
                   alt={item.caption || "Alumni community"}
                   className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
                   loading="lazy"
+                  onError={(e) => {
+                    e.currentTarget.style.display = "none";
+                  }}
                 />
                 {canManage && (
                   <button

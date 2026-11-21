@@ -1,6 +1,7 @@
 from django.contrib.auth import authenticate
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
+from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -22,7 +23,7 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated, IsAdminRole]
     def perform_create(self, serializer): serializer.save()
-    @action(detail=False, methods=["get", "patch"], permission_classes=[IsAuthenticated], url_path="me")
+    @action(detail=False, methods=["get", "patch"], permission_classes=[IsAuthenticated], parser_classes=[JSONParser, MultiPartParser, FormParser], url_path="me")
     def me(self, request):
         if request.method == "GET": return Response(UserSerializer(request.user, context=self.get_serializer_context()).data)
         serializer = UserSerializer(request.user, data=request.data, partial=True, context=self.get_serializer_context())
