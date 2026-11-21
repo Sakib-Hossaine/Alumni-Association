@@ -27,7 +27,7 @@ class DirectorySerializer(serializers.ModelSerializer):
         return job.company_name if job else ""
     def get_profile_photo(self, obj):
         photo = getattr(obj.user, "profile_photo", None) or obj.profile_photo
-        return self.context["request"].build_absolute_uri(photo.url) if photo else None
+        return photo.url if photo else None
 class ContactSerializer(serializers.ModelSerializer):
     class Meta: model = ContactInfo; exclude = ["profile"]
 class EmploymentSerializer(serializers.ModelSerializer):
@@ -44,8 +44,7 @@ class AlumniReadSerializer(serializers.ModelSerializer):
     def get_profile_photo(self, obj):
         photo = getattr(obj.user, "profile_photo", None) or obj.profile_photo
         if not photo: return None
-        request = self.context.get("request")
-        return request.build_absolute_uri(photo.url) if request else photo.url
+        return photo.url
 class AlumniWriteSerializer(serializers.ModelSerializer):
     batch_id = serializers.PrimaryKeyRelatedField(source="batch", queryset=Batch.objects.filter(is_active=True), required=False, allow_null=True)
     email = serializers.EmailField(write_only=True, required=False)

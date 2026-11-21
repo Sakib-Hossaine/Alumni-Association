@@ -132,6 +132,11 @@ if os.getenv("AWS_STORAGE_BUCKET_NAME"):
     AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
     AWS_DEFAULT_ACL = None
     AWS_QUERYSTRING_AUTH = False
+elif IS_VERCEL:
+    STORAGES = {
+        "default": {"BACKEND": "config.storage.DatabaseMediaStorage"},
+        "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
+    }
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 default_origins = "http://localhost:5173,http://127.0.0.1:5173"

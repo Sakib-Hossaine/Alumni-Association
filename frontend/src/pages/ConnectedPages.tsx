@@ -244,7 +244,7 @@ export function AlumniPage() {
     onSuccess: () => {
       toast.success("Alumni photo updated");
       setPhoto(null);
-      setPhotoPreview("");
+      // Keep the selected blob preview visible after a successful upload.
       qc.invalidateQueries({ queryKey: ["alumni"] });
       qc.invalidateQueries({ queryKey: ["alumni", "directory"] });
     },
@@ -1096,7 +1096,7 @@ export function ProfilePage() {
     onSuccess: (u) => {
       setUser(u);
       setPhoto(null);
-      setPhotoPreview("");
+      // Keep the selected blob preview visible after a successful upload.
       toast.success("Profile picture updated");
       qc.invalidateQueries({ queryKey: ["alumni", "me"] });
       qc.invalidateQueries({ queryKey: ["account", "me"] });

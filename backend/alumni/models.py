@@ -91,3 +91,8 @@ class GalleryImage(models.Model):
     class Meta:
         ordering = ["-created_at"]
     def __str__(self): return self.caption or f"Gallery image {self.pk}"
+
+
+class MediaAsset(models.Model):
+    name = models.CharField(max_length=500, primary_key=True)
+    content = models.BinaryField()
