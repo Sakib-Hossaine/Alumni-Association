@@ -1,0 +1,97 @@
+import { createBrowserRouter, Navigate } from "react-router-dom";
+import { RoleGuard } from "../components/shared/RoleGuard";
+import { Shell } from "../shell/Shell";
+import { LoginPage, BatchesPage, NotFound, Unauthorized } from "../pages/Pages";
+import {
+  DashboardPage,
+  AlumniPage,
+  EventsPage,
+  ReportsPage,
+  ProfilePage,
+  UsersPage,
+} from "../pages/ConnectedPages";
+import { DonationsPage } from "../pages/DonationPages";
+import {
+  AccountProfilePage,
+  AlumniDirectoryPage,
+  GalleryPage,
+} from "../pages/CommunityPages";
+export const router = createBrowserRouter([
+  { path: "/login", element: <LoginPage /> },
+  { path: "/gallery", element: <GalleryPage /> },
+  {
+    path: "/directory",
+    element: <RoleGuard />,
+    children: [
+      {
+        element: <Shell />,
+        children: [{ index: true, element: <AlumniDirectoryPage /> }],
+      },
+    ],
+  },
+  {
+    path: "/account/profile",
+    element: <RoleGuard />,
+    children: [
+      {
+        element: <Shell />,
+        children: [{ index: true, element: <AccountProfilePage /> }],
+      },
+    ],
+  },
+  { path: "/unauthorized", element: <Unauthorized /> },
+  {
+    path: "/admin",
+    element: <RoleGuard allowedRoles={["ADMIN"]} />,
+    children: [
+      {
+        element: <Shell />,
+        children: [
+          { index: true, element: <Navigate to="dashboard" replace /> },
+          { path: "dashboard", element: <DashboardPage /> },
+          { path: "users", element: <UsersPage /> },
+          { path: "alumni", element: <AlumniPage /> },
+          { path: "batches", element: <BatchesPage /> },
+          { path: "events", element: <EventsPage /> },
+          { path: "donations", element: <DonationsPage /> },
+          { path: "reports", element: <ReportsPage /> },
+        ],
+      },
+    ],
+  },
+  {
+    path: "/management",
+    element: <RoleGuard allowedRoles={["MANAGEMENT"]} />,
+    children: [
+      {
+        element: <Shell />,
+        children: [
+          { index: true, element: <Navigate to="dashboard" replace /> },
+          { path: "dashboard", element: <DashboardPage /> },
+          { path: "alumni", element: <AlumniPage /> },
+          { path: "events", element: <EventsPage /> },
+          { path: "donations", element: <DonationsPage /> },
+          { path: "reports", element: <ReportsPage /> },
+        ],
+      },
+    ],
+  },
+  {
+    path: "/alumni",
+    element: <RoleGuard allowedRoles={["ALUMNI"]} />,
+    children: [
+      {
+        element: <Shell />,
+        children: [
+          { index: true, element: <Navigate to="dashboard" replace /> },
+          { path: "dashboard", element: <DashboardPage /> },
+          { path: "profile", element: <ProfilePage /> },
+          { path: "events", element: <EventsPage /> },
+          { path: "my-donations", element: <DonationsPage /> },
+        ],
+      },
+    ],
+  },
+  { path: "/", element: <Navigate to="/login" replace /> },
+  { path: "*", element: <NotFound /> },
+]);

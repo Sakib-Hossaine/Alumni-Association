@@ -1,0 +1,39 @@
+# Python and local development
+__pycache__/
+*.py[cod]
+*.log
+*.pid
+.venv/
+venv/
+env/
+.env
+.env.*
+!.env.example
+backend/.env
+backend/db.sqlite3
+backend/media/
+backend/staticfiles/
+backend/.packages/
+
+# Frontend dependencies and generated output
+frontend/.env.local
+frontend/node_modules/
+frontend/dist/
+frontend/*.tsbuildinfo
+
+# Local tool caches
+.vercel/
+.npm-cache/
+.tmp/
+node_modules/
+**/node_modules/
+.venv/
+venv/
+**/.venv/
+**/venv/
+__pycache__/
+*.py[cod]
+frontend/dist/
+backend/media/
+.env
+.env.*
